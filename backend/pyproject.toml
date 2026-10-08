@@ -8,6 +8,7 @@ dependencies = [
     "alembic>=1.20.0",
     "fastapi>=0.142.4",
     "langchain>=1.4.3",
+    "psycopg[binary]>=3.3.6",
     "sqlalchemy>=2.1.4",
     "sqlmodel>=0.0.48",
     "uvicorn>=0.54.0",
