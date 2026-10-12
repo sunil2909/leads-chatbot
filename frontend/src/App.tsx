@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { ExternalLink, Mail, MessageCircle, Send, Sparkles, X } from 'lucide-react'
+import { ExternalLink, Mail, MessageCircle, X } from 'lucide-react'
+import ChatPanel from './ChatPanel'
 import './App.css'
 
 type Lead = {
@@ -166,30 +167,7 @@ function App() {
         </section>
       </main>
 
-      {chatOpen && (
-        <section className="chat-panel" role="dialog" aria-label="Chat with leads" aria-modal="false">
-          <header className="chat-header">
-            <div className="chat-title-group">
-              <span className="chat-avatar"><Sparkles size={17} /></span>
-              <div><h2>Lead assistant</h2><p><span className="chat-status-dot" />Preview · inactive</p></div>
-            </div>
-            <button type="button" className="chat-close" aria-label="Close chat" onClick={() => setChatOpen(false)}>
-              <X size={18} />
-            </button>
-          </header>
-          <div className="chat-body">
-            <div className="assistant-message">
-              <span className="message-kicker">LEADLINE ASSISTANT</span>
-              <p>Your lead conversations will appear here.</p>
-              <span className="message-time">PHASE 02 CONNECTION</span>
-            </div>
-          </div>
-          <form className="chat-composer">
-            <input aria-label="Message" placeholder="Assistant unavailable in this preview" disabled />
-            <button type="button" aria-label="Send message" disabled><Send size={16} /></button>
-          </form>
-        </section>
-      )}
+      <ChatPanel apiBaseUrl={API_BASE_URL} open={chatOpen} onClose={() => setChatOpen(false)} />
 
       <button
         type="button"
