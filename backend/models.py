@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from sqlalchemy import DateTime
 from sqlmodel import Field, SQLModel
 
 
@@ -21,3 +24,10 @@ class Lead(SQLModel, table=True):
     lead_profile: str | None = None
     city: str | None = None
     last_notable_activity: str | None = None
+    status: str = Field(default="open", index=True)
+    created_at: datetime | None = Field(
+        default=None, sa_type=DateTime(timezone=True)
+    )
+    closed_at: datetime | None = Field(
+        default=None, sa_type=DateTime(timezone=True)
+    )
