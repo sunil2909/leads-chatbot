@@ -102,7 +102,21 @@ class LeadsApiTests(unittest.TestCase):
                     seeded_count = connection.exec_driver_sql(
                         "SELECT COUNT(*) FROM leads"
                     ).scalar_one()
+                    mismatched_status = connection.exec_driver_sql(
+                        "SELECT COUNT(*) FROM leads WHERE "
+                        "(converted = 1 AND (status != 'closed' OR closed_at IS NULL)) "
+                        "OR (converted = 0 AND (status != 'open' OR closed_at IS NOT NULL)) "
+                        "OR created_at IS NULL"
+                    ).scalar_one()
                 self.assertEqual(seeded_count, 500)
+                self.assertEqual(mismatched_status, 0)
+
+                command.downgrade(config, "001_create_leads")
+                columns = {
+                    column["name"]
+                    for column in sqlalchemy_inspect(migration_engine).get_columns("leads")
+                }
+                self.assertNotIn("status", columns)
 
                 command.downgrade(config, "base")
                 self.assertFalse(sqlalchemy_inspect(migration_engine).has_table("leads"))
