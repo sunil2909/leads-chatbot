@@ -16,6 +16,27 @@ services:
       timeout: 5s
       retries: 10
       start_period: 5s
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 20s
+
+  model-puller:
+    image: ollama/ollama:latest
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: /bin/sh -lc "until ollama list >/dev/null 2>&1; do sleep 2; done; ollama pull ${OLLAMA_MODEL:-llama3.2}"
+    volumes:
+      - ollama_data:/root/.ollama
+
   backend:
     build: ./backend
     environment:
@@ -24,11 +45,15 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-leads_db}
+      OLLAMA_BASE_URL: "${OLLAMA_BASE_URL:-http://ollama:11434}"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2}"
       FRONTEND_ORIGINS: "${FRONTEND_ORIGINS:-http://localhost:8000,http://127.0.0.1:8000}"
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     depends_on:
       db:
+        condition: service_healthy
+      ollama:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
@@ -49,3 +74,4 @@ services:
 
 volumes:
   postgres_data:
+  ollama_data:

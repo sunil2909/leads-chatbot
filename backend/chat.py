@@ -39,7 +39,7 @@ from sqlmodel import Session, col, select
 from models import Lead
 
 DEFAULT_OLLAMA_BASE_URL = "http://localhost:11434"
-DEFAULT_OLLAMA_MODEL = "hf.co/MaziyarPanahi/Qwen3-1.7B-GGUF:Q6_K"
+DEFAULT_OLLAMA_MODEL = "llama3.2"
 # agent -> tools -> agent counts as 3 steps; allow a couple of tool rounds.
 RECURSION_LIMIT = 8
 MAX_SAMPLE_LEADS = 20
